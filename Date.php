@@ -3,12 +3,10 @@
 namespace nre\behaviors;
 
 use yii\base\Behavior;
-use yii\db\ActiveRecord;
-use yii\helpers\Json;
 
 /**
  * Class Date.
- * Behavior for encoding and decoding model fields as JSON.
+ * Behavior for encoding and decoding model fields as Unix timestamp.
  *
  * @author    Serhiy Vinichuk <serhiyvinichuk@gmail.com>
  * @copyright 2014 NullReferenceException

@@ -3,7 +3,6 @@
 namespace nre\behaviors;
 
 use yii\base\Behavior;
-use yii\db\ActiveRecord;
 use yii\helpers\Json;
 
 /**
@@ -21,15 +20,15 @@ class Json extends Behavior
     public function events()
     {
         return [
-            ActiveRecord::EVENT_BEFORE_INSERT => 'arrayToJson',
-            ActiveRecord::EVENT_BEFORE_UPDATE => 'arrayToJson',
-            ActiveRecord::EVENT_AFTER_FIND => 'jsonToArray',
-            ActiveRecord::EVENT_AFTER_INSERT => 'jsonToArray',
-            ActiveRecord::EVENT_AFTER_UPDATE => 'jsonToArray',
+            ActiveRecord::EVENT_BEFORE_INSERT => 'encode',
+            ActiveRecord::EVENT_BEFORE_UPDATE => 'encode',
+            ActiveRecord::EVENT_AFTER_FIND => 'decode',
+            ActiveRecord::EVENT_AFTER_INSERT => 'decode',
+            ActiveRecord::EVENT_AFTER_UPDATE => 'decode',
         ];
     }
 
-    public function arrayToJson()
+    public function encode()
     {
         $model = $this->owner;
         foreach ($this->fields as $field) {
@@ -39,7 +38,7 @@ class Json extends Behavior
         }
     }
 
-    public function jsonToArray()
+    public function decode()
     {
         $model = $this->owner;
         foreach ($this->fields as $field) {
