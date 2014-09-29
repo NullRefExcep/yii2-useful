@@ -1,0 +1,42 @@
+{
+    "name": "null-ref-excep/yii2-common-behaviors",
+    "description": "Yii 2 behaviors for data conversion",
+    "keywords": [
+        "yii2",
+        "framework",
+        "behavior"
+    ],
+    "homepage": "https://github.com/NullRefExcep/yii2-common-behaviors",
+    "type": "yii2-extension",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Dmytro Karpovych",
+            "email": "zayec77@gmail.com",
+            "homepage": "https://github.com/ZAYEC77"
+        },
+        {
+            "name": "Serhiy Vinichuk",
+            "email": "serhiyvinichuk@gmail.com",
+            "homepage": "https://github.com/serhiyvinichuk"
+        }
+    ],
+    "support": {
+        "issues": "https://github.com/NullRefExcep/yii2-common-behaviors/issues",
+        "source": "https://github.com/NullRefExcep/yii2-common-behaviors"
+    },
+    "minimum-stability": "dev",
+    "require": {
+        "php": ">=5.4.0",
+        "yiisoft/yii2": "2.0.0-rc"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "*",
+        "fzaninotto/faker": "*"
+    },
+    "autoload": {
+        "psr-4": {
+            "nre\\behaviors\\": "src/"
+        }
+    }
+}
