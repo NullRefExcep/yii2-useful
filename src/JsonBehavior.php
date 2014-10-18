@@ -3,17 +3,18 @@
 namespace nre\behaviors;
 
 use yii\base\Behavior;
-use yii\helpers\Json;
+use yii\db\ActiveRecord;
+use yii\helpers\JsonBehavior;
 
 /**
- * Class Json.
+ * Class JsonBehavior.
  * Behavior for encoding and decoding model fields as JSON.
  *
  * @author    Serhiy Vinichuk <serhiyvinichuk@gmail.com>
  * @copyright 2014 NullReferenceException
  * @license   MIT
  */
-class Json extends Behavior
+class JsonBehavior extends Behavior
 {
     public $fields = [];
 
