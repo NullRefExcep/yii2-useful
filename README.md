@@ -1,4 +1,4 @@
-yii2-common-behaviors
+yii2-useful
 =====================
 
 * JSONBehavior
