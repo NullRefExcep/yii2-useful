@@ -1,6 +1,6 @@
 <?php
 
-namespace nre\behaviors;
+namespace nullref\useful;
 
 use yii\base\Behavior;
 use yii\db\ActiveRecord;

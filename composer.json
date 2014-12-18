@@ -1,6 +1,6 @@
 {
-    "name": "null-ref-excep/yii2-common-behaviors",
-    "description": "Yii 2 behaviors for data conversion",
+    "name": "nullref/yii2-useful",
+    "description": "Useful things for Yii2",
     "keywords": [
         "yii2",
         "framework",
@@ -30,13 +30,9 @@
         "php": ">=5.4.0",
         "yiisoft/yii2": ">=2.0.0"
     },
-    "require-dev": {
-        "phpunit/phpunit": "*",
-        "fzaninotto/faker": "*"
-    },
     "autoload": {
         "psr-4": {
-            "nre\\behaviors\\": "src/"
+            "nullref\\useful\\": "src/"
         }
     }
 }

@@ -1,8 +1,9 @@
 <?php
 
-namespace nre\behaviors;
+namespace nullref\useful;
 
 use yii\base\Behavior;
+use yii\db\ActiveRecord;
 
 /**
  * Class Date.
@@ -12,7 +13,7 @@ use yii\base\Behavior;
  * @copyright 2014 NullReferenceException
  * @license   MIT
  */
-class Date extends Behavior
+class DateBehavior extends Behavior
 {
     public $format = 'd.m.Y';
     public $fields = [];
