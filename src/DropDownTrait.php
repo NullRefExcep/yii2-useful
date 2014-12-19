@@ -5,10 +5,9 @@ namespace nullref\useful;
 use yii\helpers\ArrayHelper;
 
 /**
- * Trait ActiveRecordDropDown
  * Allows get list from ActiveRecord
  */
-trait ActiveRecordDropDown
+trait DropDownTrait
 {
     /**
      * @param string $index
