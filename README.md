@@ -10,3 +10,5 @@ Allows save in text field array structure.
 Allows save in integer field bit array.
 ## DropDownTrait
 Allows get lists from ActiveRecord.
+## PasswordTrait
+Easy work with password.
