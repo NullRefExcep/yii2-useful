@@ -1,14 +1,19 @@
-yii2-useful
+Yii2-useful
 =====================
 Collection helpful classes for Yii2
 
-## JSONBehavior
+### JSONBehavior
 Allows save in text field customs data structure.
-## ArrayBehavior
+### ArrayBehavior
 Allows save in text field array structure.
-## BitBehavior
+### BitBehavior
 Allows save in integer field bit array.
-## DropDownTrait
+### DropDownTrait
 Allows get lists from ActiveRecord.
-## PasswordTrait
+### PasswordTrait
 Easy work with password.
+
+## Installation
+```bash
+composer require nullref/yii2-useful
+```
