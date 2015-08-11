@@ -25,7 +25,7 @@ class EditAction extends Action
     public function init()
     {
         parent::init();
-        if (is_callable($this->findModel)){
+        if (!is_callable($this->findModel)){
             throw new InvalidConfigException('findModel must be set');
         }
     }
