@@ -12,6 +12,8 @@ Allows save in integer field bit array.
 Allows get lists from ActiveRecord.
 ### PasswordTrait
 Easy work with password.
+### EditAction
+Action for AJAX record update.
 
 ## Installation
 ```bash
