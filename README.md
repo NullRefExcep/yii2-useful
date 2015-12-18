@@ -14,6 +14,10 @@ Allows get lists from ActiveRecord.
 Easy work with password.
 ### EditAction
 Action for AJAX record update.
+### MultipleUpdateAction
+Action multiple update by list of IDs.
+### TranslationBehavior
+Allows implement translations for models
 
 ## Installation
 ```bash
