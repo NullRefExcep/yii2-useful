@@ -1,5 +1,8 @@
 Yii2-useful
 =====================
+[![Latest Stable Version](https://poser.pugx.org/nullref/yii2-useful/v/stable)](https://packagist.org/packages/nullref/yii2-useful) [![Total Downloads](https://poser.pugx.org/nullref/yii2-useful/downloads)](https://packagist.org/packages/nullref/yii2-useful) [![Latest Unstable Version](https://poser.pugx.org/nullref/yii2-useful/v/unstable)](https://packagist.org/packages/nullref/yii2-useful) [![License](https://poser.pugx.org/nullref/yii2-useful/license)](https://packagist.org/packages/nullref/yii2-useful)
+
+
 Collection helpful classes for Yii2
 
 ### JSONBehavior
