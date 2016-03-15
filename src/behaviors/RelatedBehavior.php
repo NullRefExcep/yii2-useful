@@ -19,6 +19,7 @@ use yii\db\ActiveRecord;
  *      return [
  *          'related' => [
  *              'class' => RelatedBehavior::className(),
+ *              'filedSuffix' => '_list', // default 'List'
  *              'fields' => [
  *                  'relation' => RelatedModel::className(),
  *              ]
@@ -58,8 +59,11 @@ class RelatedBehavior extends Behavior
     /** @var string */
     public $newKeyPrefix = 'new_';
 
-    /** @var null| string | callable  */
+    /** @var null| string | callable */
     public $indexBy = null;
+
+    /** @var bool  */
+    public $createDefault = false;
 
     /** @var ActiveRecord[][] */
     protected $_newValues = [];
@@ -169,7 +173,7 @@ class RelatedBehavior extends Behavior
             } else {
                 $result = $owner->{$originalName};
             }
-            if (empty($result)) {
+            if (empty($result) && $this->createDefault) {
                 return [new $this->fields[$originalName]()];
             }
             return $result;
