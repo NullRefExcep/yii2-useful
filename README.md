@@ -5,6 +5,54 @@ Yii2-useful
 
 Collection helpful classes for Yii2
 
+## Installation
+```bash
+composer require nullref/yii2-useful
+```
+
+## Structure
+
+### Actions
+#### EditAction
+Action for AJAX model update
+
+#### MultipleUpdateAction
+Allows to update multiple models
+
+### Behaviors
+#### BinaryBehavior
+Allows encode and decode model fields as integer number.
+
+#### DateBehavior
+Allows encode and decode model fields as Unix timestamp.
+
+#### JsonBehavior
+Allows encode and decode model fields as JSON.
+
+#### RelatedBehavior
+Allows to load related data for model.
+
+#### SerializeBehavior
+Allows encode and decode model fields as serialize php string.
+
+#### TranslationBehavior
+Allow to implement multilingual features.
+
+### Traits
+#### GetDefinition
+Allows to get defined in DI container class or default.
+
+#### HasPassword
+Allows to set and validate password for model.
+
+#### Mappable
+Allows to get map from AR records.
+
+
+
+## Old version
+(Will be remove from version 1.0.0)
+
 ### JSONBehavior
 Allows save in text field customs data structure.
 ### ArrayBehavior
@@ -22,7 +70,3 @@ Action multiple update by list of IDs.
 ### TranslationBehavior
 Allows implement translations for models
 
-## Installation
-```bash
-composer require nullref/yii2-useful
-```
