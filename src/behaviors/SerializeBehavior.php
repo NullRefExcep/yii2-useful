@@ -28,6 +28,7 @@ use yii\db\ActiveRecord;
 class SerializeBehavior extends Behavior
 {
     public $fields = [];
+    public $default = [];
 
     public function events()
     {
@@ -54,7 +55,9 @@ class SerializeBehavior extends Behavior
     {
         $model = $this->owner;
         foreach ($this->fields as $field) {
-            $model->$field = unserialize($model->$field);
+            if (($model->$field = unserialize($model->$field)) === false) {
+                $model->$field = $this->default;
+            }
         }
     }
 } 
