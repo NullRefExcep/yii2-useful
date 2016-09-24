@@ -13,40 +13,55 @@ composer require nullref/yii2-useful
 ## Structure
 
 ### Actions
-#### EditAction
-Action for AJAX model update
+- #### EditAction
+    
+    Action for AJAX model update
 
-#### MultipleUpdateAction
-Allows to update multiple models
+- #### MultipleUpdateAction
+    
+    Allows to update multiple models
 
 ### Behaviors
-#### BinaryBehavior
-Allows encode and decode model fields as integer number.
+- #### BinaryBehavior
+    
+    Allows encode and decode model fields as integer number.
 
-#### DateBehavior
-Allows encode and decode model fields as Unix timestamp.
+- #### DateBehavior
+    Allows encode and decode model fields as Unix timestamp.
 
-#### JsonBehavior
-Allows encode and decode model fields as JSON.
+- #### JsonBehavior
 
-#### RelatedBehavior
-Allows to load related data for model.
+    Allows encode and decode model fields as JSON.
 
-#### SerializeBehavior
-Allows encode and decode model fields as serialize php string.
+- #### RelatedBehavior
 
-#### TranslationBehavior
-Allow to implement multilingual features.
+    Allows to load related data for model.
+
+- #### SerializeBehavior
+
+    Allows encode and decode model fields as serialize php string.
+
+- #### TranslationBehavior
+
+    Allow to implement multilingual features.
 
 ### Traits
-#### GetDefinition
-Allows to get defined in DI container class or default.
+- #### GetDefinition
 
-#### HasPassword
-Allows to set and validate password for model.
+    Allows to get defined in DI container class or default.
 
-#### Mappable
-Allows to get map from AR records.
+- #### HasPassword
+    
+    Allows to set and validate password for model.
+
+- #### Mappable
+    
+    Allows to get map from AR records.
+    
+### Helpers
+- #### Memoize
+    
+    Class for calling memoized function or method
 
 
 
