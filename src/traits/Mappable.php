@@ -15,7 +15,7 @@ use yii\helpers\ArrayHelper;
  *
  * @package nullref\useful\traits
  *
- * @method ActiveQueryInterface find()
+ * @method static ActiveQueryInterface find()
  */
 trait Mappable
 {

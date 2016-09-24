@@ -12,7 +12,7 @@ use Yii;
  *
  * @package nullref\core\traits
  *
- * @method string className()
+ * @method static string className()
  *
  */
 trait GetDefinition
