@@ -7,6 +7,7 @@ use yii\base\Action;
 use yii\base\InvalidConfigException;
 use yii\db\ActiveRecord;
 use yii\web\NotFoundHttpException;
+use yii\web\Response;
 
 /**
  * Action for AJAX model update
@@ -24,7 +25,15 @@ use yii\web\NotFoundHttpException;
  *                       return str_replace(',', '.', $value);
  *                   }
  *                   return $value;
- *               }
+ *               },
+ *              'onError' => function ($value, $attribute) {
+ *                   $errors = $model->getFirstErrors();
+ *                   Yii::$app->response->format = Response::FORMAT_JSON;
+ *                   return [
+ *                      'success' => false,
+ *                      'message' => array_shift($errors),
+ *                   ];
+ *               },
  *           ],
  *       ];
  *   }
@@ -41,6 +50,12 @@ class EditAction extends Action
 
     /** @var callable|null */
     public $filter;
+    /**
+     * Return response if error
+     *
+     * @var null|\Closure
+     */
+    public $onError = null;
 
     /**
      * Check if action has valid findModel method
@@ -73,7 +88,19 @@ class EditAction extends Action
                 $value = call_user_func($this->filter, $value, $attribute);
             }
             $model->$attribute = $value;
-            $model->save();
+            if (!$model->save()) {
+                if (is_callable($this->onError)) {
+                    return call_user_func($this->onError, $model);
+                } else {
+                    $errors = $model->getFirstErrors();
+                    Yii::$app->response->format = Response::FORMAT_JSON;
+                    return [
+                        'success' => false,
+                        'message' => array_shift($errors),
+                    ];
+                }
+            }
+
         }
     }
 }
