@@ -50,6 +50,12 @@ class EditAction extends Action
 
     /** @var callable|null */
     public $filter;
+
+    /**
+     * @var ActiveRecord
+     */
+    public $model;
+
     /**
      * Return response if error
      *
@@ -82,6 +88,7 @@ class EditAction extends Action
         if (!(empty($post['pk']) || empty($post['name']) || !isset($post['value']))) {
             /** @var ActiveRecord $model */
             $model = call_user_func($this->findModel, $post['pk']);
+            $this->model = $model;
             $attribute = $post['name'];
             $value = $post['value'];
             if (is_callable($this->filter)) {
