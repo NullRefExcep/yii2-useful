@@ -87,7 +87,7 @@ class TranslationBehavior extends Behavior
     public function init()
     {
         parent::init();
-        if (!in_array($this->defaultLanguage, $this->languages)) {
+        if (!array_key_exists($this->defaultLanguage, $this->languages)) {
             throw new InvalidConfigException('Default language must be exist');
         }
     }
