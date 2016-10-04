@@ -82,12 +82,18 @@ class TranslationBehavior extends Behavior
      */
     public $languages = [];
 
+    /**
+     * Delete related records when delete owner
+     * @var bool
+     */
+    public $deleteTranslations = true;
+
     protected $_newModels = [];
 
     public function init()
     {
         parent::init();
-        if (!in_array($this->defaultLanguage, $this->languages)) {
+        if (!in_array($this->defaultLanguage, $this->languages, true)) {
             throw new InvalidConfigException('Default language must be exist');
         }
     }
@@ -100,9 +106,50 @@ class TranslationBehavior extends Behavior
         return [
             ActiveRecord::EVENT_AFTER_INSERT => 'afterSave',
             ActiveRecord::EVENT_AFTER_UPDATE => 'afterSave',
+            ActiveRecord::EVENT_AFTER_DELETE => 'afterDelete',
         ];
     }
 
+    /**
+     * Delete related records when delete owner
+     */
+    public function afterDelete()
+    {
+        if ($this->deleteTranslations) {
+            /** @var ActiveRecord $owner */
+            foreach ($this->getModels() as $model) {
+                $model->delete();
+            }
+        }
+    }
+
+    /**
+     * @return ActiveRecord[]
+     */
+    protected function getModels()
+    {
+        $selfModels = ArrayHelper::index($this->owner->{$this->relation}, function ($value) {
+            return $this->languages[$value->{$this->languageField}];
+        });
+        return array_merge($this->getNewModels(), $selfModels);
+    }
+
+    /**
+     * @return ActiveRecord[]
+     */
+    protected function getNewModels()
+    {
+        if (count($this->_newModels) === 0) {
+            foreach ($this->languages as $key => $language) {
+                $this->_newModels[$language] = new $this->langClassName([$this->languageField => $key]);
+            }
+        }
+        return $this->_newModels;
+    }
+
+    /**
+     * Save related translations
+     */
     public function afterSave()
     {
         /** @var ActiveRecord $owner */
@@ -113,24 +160,11 @@ class TranslationBehavior extends Behavior
         }
     }
 
-    protected function getModels()
-    {
-        $selfModels = ArrayHelper::index($this->owner->{$this->relation}, function ($value) {
-            return $this->languages[$value->{$this->languageField}];
-        });
-        return array_merge($this->getNewModels(), $selfModels);
-    }
-
-    protected function getNewModels()
-    {
-        if (empty($this->_newModels)) {
-            foreach ($this->languages as $key => $language) {
-                $this->_newModels[$language] = new $this->langClassName([$this->languageField => $key]);
-            }
-        }
-        return $this->_newModels;
-    }
-
+    /**
+     * Modify owner model validators for translation attributes
+     * e.g.  `['title', 'required']` convert to `[['title_en', 'title_fr'], 'required']`
+     * @param \yii\base\Component $owner
+     */
     public function attach($owner)
     {
         parent::attach($owner);
@@ -154,10 +188,15 @@ class TranslationBehavior extends Behavior
             }
 
             $params = array_slice($rule, 2);
-            $validators[] = Validator::createValidator($rule[1], $owner, $rule_attributes, $params);
+            $validators->append(Validator::createValidator($rule[1], $owner, $rule_attributes, $params));
         }
     }
 
+    /**
+     * @param $attribute
+     * @param $language
+     * @return mixed|string
+     */
     private function getAttributeName($attribute, $language)
     {
         if ($this->attributeNamePattern instanceof \Closure) {
@@ -169,6 +208,12 @@ class TranslationBehavior extends Behavior
         ]);
     }
 
+    /**
+     * Check translation attributes
+     * @param string $name
+     * @param bool $checkVars
+     * @return bool
+     */
     public function canGetProperty($name, $checkVars = true)
     {
         if ($this->hasOwnProperty($name)) {
@@ -177,20 +222,31 @@ class TranslationBehavior extends Behavior
         return parent::canGetProperty($name, $checkVars);
     }
 
+    /**
+     * Check translation attributes
+     * @param $name
+     * @return bool
+     */
     public function hasOwnProperty($name)
     {
         foreach ($this->translationAttributes as $attribute) {
-            if ($name == $attribute) {
+            if ($name === $attribute) {
                 return true;
             }
             foreach ($this->languages as $language) {
-                if ($this->getAttributeName($attribute, $language) == $name) {
+                if ($this->getAttributeName($attribute, $language) === $name) {
                     return true;
                 }
             }
         }
     }
 
+    /**
+     * Check translation attributes
+     * @param string $name
+     * @param bool $checkVars
+     * @return bool
+     */
     public function canSetProperty($name, $checkVars = true)
     {
         if ($this->hasOwnProperty($name)) {
@@ -199,18 +255,21 @@ class TranslationBehavior extends Behavior
         return parent::canSetProperty($name, $checkVars);
     }
 
+    /**
+     * @param string $name
+     * @return mixed
+     */
     public function __get($name)
     {
         $list = $this->getModels();
 
-
         foreach ($this->translationAttributes as $attribute) {
-            if ($name == $attribute) {
+            if ($name === $attribute) {
                 return $list[$this->defaultLanguage]->{$attribute};
             }
             foreach ($list as $language) {
                 $langKey = $this->languages[$language->{$this->languageField}];
-                if ($this->getAttributeName($attribute, $langKey) == $name) {
+                if ($this->getAttributeName($attribute, $langKey) === $name) {
                     return $list[$langKey]->{$attribute};
                 }
             }
@@ -218,17 +277,22 @@ class TranslationBehavior extends Behavior
         return parent::__get($name);
     }
 
+    /**
+     * @param string $name
+     * @param mixed $value
+     * @return mixed
+     */
     public function __set($name, $value)
     {
         $list = $this->getModels();
 
         foreach ($this->translationAttributes as $attribute) {
-            if ($name == $attribute) {
+            if ($name === $attribute) {
                 return $list[$this->defaultLanguage]->{$attribute} = $value;
             }
             foreach ($list as $language) {
                 $langKey = $this->languages[$language->{$this->languageField}];
-                if ($this->getAttributeName($attribute, $langKey) == $name) {
+                if ($this->getAttributeName($attribute, $langKey) === $name) {
                     return $list[$langKey]->{$attribute} = $value;
                 }
             }
