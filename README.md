@@ -7,7 +7,7 @@ Collection helpful classes for Yii2
 
 ## Installation
 ```bash
-composer require nullref/yii2-useful
+composer require nullref/yii2-useful --prefer-dist
 ```
 
 ## Structure
