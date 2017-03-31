@@ -62,7 +62,7 @@ class RelatedBehavior extends Behavior
     /** @var null| string | callable */
     public $indexBy = null;
 
-    /** @var bool  */
+    /** @var bool */
     public $createDefault = false;
 
     /** @var ActiveRecord[][] */
@@ -103,7 +103,7 @@ class RelatedBehavior extends Behavior
                     $models[$key] = new $class();
                     $models[$key]->setAttributes($item);
                 }
-                $owner->{$name . $this->filedSuffix} = ($models);
+                $owner->{$name . $this->filedSuffix} = $models;
             }
         }
 
@@ -171,11 +171,12 @@ class RelatedBehavior extends Behavior
             if ($owner->isNewRecord) {
                 $result = $this->_newValues[$name];
             } else {
-                $result = $owner->{$originalName};
+                $result = $owner->getRelation($originalName)->indexBy($this->indexBy)->all();
             }
             if (empty($result) && $this->createDefault) {
                 return [new $this->fields[$originalName]()];
             }
+
             return $result;
         }
         return parent::__get($name);
@@ -198,7 +199,7 @@ class RelatedBehavior extends Behavior
                 $storedValues = $owner->getRelation($originalName)->indexBy($this->indexBy)->all();
                 foreach ($models as $key => $model) {
                     /** @var $model ActiveRecord */
-                    if ((substr($key, 0, strlen($this->newKeyPrefix)) == $this->newKeyPrefix) || empty($model->primaryKey)) {
+                    if ((substr($key, 0, strlen($this->newKeyPrefix)) == $this->newKeyPrefix) || ($this->indexBy && !array_key_exists($key, $storedValues))) {
                         $this->_newValues[$name][] = $model;
                     } else {
                         $this->_editedValues[$name][$key] = $storedValues[$key];
@@ -246,6 +247,4 @@ class RelatedBehavior extends Behavior
             }
         }
     }
-
-
 }
