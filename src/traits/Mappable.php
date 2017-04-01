@@ -2,6 +2,7 @@
 
 namespace nullref\useful\traits;
 
+use Yii;
 use yii\db\ActiveQueryInterface;
 use yii\helpers\ArrayHelper;
 
@@ -30,12 +31,42 @@ trait Mappable
      */
     public static function getMap($value = 'name', $index = 'id', $condition = [], $asArray = true)
     {
-        $query = static::find()->where($condition);
+        $query = static::find();
+        if (!empty($condition)) {
+            $query->where($condition);
+        }
         if ($asArray) {
             $query->asArray();
         }
         return ArrayHelper::map($query->all(), $index, $value);
     }
 
-    //@TODO implement method with cache
+
+    /**
+     * Return array in [$index => $value] format from records of model
+     * With using db component cache
+     *
+     * @param string $value
+     * @param string $index
+     * @param array $condition
+     * @param bool $asArray
+     * @param \yii\db\Connection|null $db
+     * @return array
+     */
+    public static function getCachedMap($value = 'name', $index = 'id', $condition = [], $asArray = true, $db = null)
+    {
+        $query = static::find();
+        if (!empty($condition)) {
+            $query->where($condition);
+        }
+        if ($asArray) {
+            $query->asArray();
+        }
+        if ($db == null) {
+            $db = Yii::$app->db;
+        }
+        $db->cache(function () use ($query, $index, $value) {
+            return ArrayHelper::map($query->all(), $index, $value);
+        });
+    }
 }
