@@ -14,7 +14,7 @@ use yii\web\Response;
 /**
  * Class MultipleUpdateAction
  *
- * Allows to update multiple models by primary keys separated from POST
+ * Allows to update multiple models by primary keys from POST
  *
  * ```php
  *   public function actions()

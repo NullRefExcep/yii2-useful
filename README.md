@@ -15,11 +15,15 @@ composer require nullref/yii2-useful --prefer-dist
 ### Actions
 - #### EditAction
     
-    Action for AJAX model update
+    Action for AJAX model update.
+
+- #### MultipleDeleteAction
+    
+    Allows to delete multiple models.
 
 - #### MultipleUpdateAction
     
-    Allows to update multiple models
+    Allows to update multiple models.
 
 ### Behaviors
 - #### BinaryBehavior
@@ -56,16 +60,20 @@ composer require nullref/yii2-useful --prefer-dist
 
 - #### Mappable
     
-    Allows to get map from AR records.
+    Allows to get map from ActiveRecord.
+    
+- #### MappableQuery
+
+    Same as Mappable trait but for ActiveQuery.
     
 ### Filters
 - #### RedirectFilter
-    Redirect after action by url param
+    Redirect after action by url param.
 
 ### Helpers
 - #### Memoize
     
-    Class for calling memoized function or method
+    Class for calling memoized function or method.
 
 
 
