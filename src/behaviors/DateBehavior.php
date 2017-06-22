@@ -18,7 +18,7 @@ use yii\db\ActiveRecord;
  *          [
  *               'class' => DateBehavior::className(),
  *               'fields' => ['name_of_field#1', 'name_of_field#2',],
- *               'format' => 'd.m.Y', // Custom datetime format 
+ *               'format' => 'd.m.Y', // Custom datetime format
  *          ],
  *     ];
  * }

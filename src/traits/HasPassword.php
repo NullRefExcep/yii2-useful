@@ -13,14 +13,13 @@ use Yii;
 trait HasPassword
 {
     /**
-     * @var string $_password
-     */
-    protected $_password;
-
-    /**
      * @var string
      */
     public $passwordConfirm;
+    /**
+     * @var string $_password
+     */
+    protected $_password;
 
     public function getPassword()
     {
