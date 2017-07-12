@@ -14,7 +14,7 @@ use yii\helpers\ArrayHelper;
  *
  * @package nullref\useful\traits
  *
- * @method array|ActiveRecord[] all(Connection $db)
+ * @method array|ActiveRecord[] all(Connection $db = null)
  */
 trait MappableQuery
 {
