@@ -1,6 +1,6 @@
 <?php
 
-namespace nullref\helpers;
+namespace nullref\useful\helpers;
 
 /**
  * Class with db utils
