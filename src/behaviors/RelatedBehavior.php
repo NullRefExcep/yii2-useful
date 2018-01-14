@@ -19,10 +19,10 @@ use yii\db\ActiveRecord;
  *      return [
  *          'related' => [
  *              'class' => RelatedBehavior::className(),
- *              'filedSuffix' => '_list', // default 'List'
+ *              'fieldSuffix' => '_list', // default 'List'
  *              'fields' => [
  *                  'relation' => RelatedModel::className(),
- *              ]
+ *              ],
  *          ],
  *      ];
  *  }
@@ -34,7 +34,9 @@ use yii\db\ActiveRecord;
  *      $model = $this->findModel($id);
  *
  *      $default = Yii::$app->request->isPost ? ['RelatedModel' => []] : [];
- *      if ($model->loadWithRelations(array_merge($default, Yii::$app->request->post())) && $model->save()) {
+ *      if ($model->loadWithRelations(array_merge($default, Yii::$app->request->post()))
+ *          && $model->validateWithRelations()
+ *          && $model->save(false)) {
  *          return $this->redirect(['view', 'id' => $model->id]);
  *      } else {
  *          return $this->render('update', [
@@ -46,21 +48,29 @@ use yii\db\ActiveRecord;
  * @package nullref\useful\behaviors
  *
  * @author    Dmytro Karpovych
- * @copyright 2015 NRE
+ * @copyright 2017 NRE
  */
 class RelatedBehavior extends Behavior
 {
+    /**
+     * Different types of mapping
+     */
+    const MAPPED_TYPE_PK_KEY = 'pk-key';
+    const MAPPED_TYPE_PK_FIELD = 'pk-field';
+
     /** @var array */
     public $fields = [];
 
     /** @var string */
-    public $filedSuffix = 'List';
+    public $fieldSuffix = 'List';
 
     /** @var string */
     public $newKeyPrefix = 'new_';
 
     /** @var null| string | callable */
     public $indexBy = null;
+
+    public $mappedType = self::MAPPED_TYPE_PK_KEY;
 
     /** @var bool */
     public $createDefault = false;
@@ -71,6 +81,8 @@ class RelatedBehavior extends Behavior
     protected $_editedValues = [];
     /** @var ActiveRecord[][] */
     protected $_removedValues = [];
+    /** @var boolean[][] */
+    protected $_isMutated = [];
 
     /**
      * @return array
@@ -103,7 +115,7 @@ class RelatedBehavior extends Behavior
                     $models[$key] = new $class();
                     $models[$key]->setAttributes($item);
                 }
-                $owner->{$name . $this->filedSuffix} = $models;
+                $owner->{$name . $this->fieldSuffix} = $models;
             }
         }
 
@@ -117,11 +129,20 @@ class RelatedBehavior extends Behavior
      */
     public function canSetProperty($name, $checkVars = true)
     {
-        $originalName = str_replace($this->filedSuffix, '', $name);
+        $originalName = $this->getOriginalName($name);
         if (isset($this->fields[$originalName])) {
             return true;
         }
         return parent::canSetProperty($name, $checkVars);
+    }
+
+    /**
+     * @param $name
+     * @return mixed
+     */
+    public function getOriginalName($name)
+    {
+        return str_replace($this->fieldSuffix, '', $name);
     }
 
     /**
@@ -131,7 +152,7 @@ class RelatedBehavior extends Behavior
      */
     public function canGetProperty($name, $checkVars = true)
     {
-        $originalName = str_replace($this->filedSuffix, '', $name);
+        $originalName = $this->getOriginalName($name);
         if (isset($this->fields[$originalName])) {
             return true;
         }
@@ -146,9 +167,10 @@ class RelatedBehavior extends Behavior
     public function init()
     {
         foreach ($this->fields as $name => $class) {
-            $this->_newValues[$name . $this->filedSuffix] = [];
-            $this->_removedValues[$name . $this->filedSuffix] = [];
-            $this->_editedValues[$name . $this->filedSuffix] = [];
+            $this->_newValues[$name . $this->fieldSuffix] = [];
+            $this->_removedValues[$name . $this->fieldSuffix] = [];
+            $this->_editedValues[$name . $this->fieldSuffix] = [];
+            $this->_isMutated[$name . $this->fieldSuffix] = false;
             if (!class_exists($class)) {
                 throw new InvalidConfigException("Class $class doesn't exist");
             }
@@ -164,14 +186,18 @@ class RelatedBehavior extends Behavior
      */
     public function __get($name)
     {
-        $originalName = str_replace($this->filedSuffix, '', $name);
+        $originalName = $this->getOriginalName($name);
         if (isset($this->fields[$originalName])) {
             /** @var ActiveRecord $owner */
             $owner = $this->owner;
             if ($owner->isNewRecord) {
                 $result = $this->_newValues[$name];
             } else {
-                $result = $owner->getRelation($originalName)->indexBy($this->indexBy)->all();
+                if ($this->_isMutated[$name]) {
+                    $result = $this->_editedValues[$name] + $this->_newValues[$name];
+                } else {
+                    $result = $owner->getRelation($originalName)->indexBy($this->indexBy)->all();
+                }
             }
             if (empty($result) && $this->createDefault) {
                 return [new $this->fields[$originalName]()];
@@ -189,21 +215,38 @@ class RelatedBehavior extends Behavior
      */
     public function __set($name, $models)
     {
-        $originalName = str_replace($this->filedSuffix, '', $name);
+        $originalName = $this->getOriginalName($name);
         if (isset($this->fields[$originalName])) {
+            $relatedModelClass = $this->fields[$originalName];
+            $this->_isMutated[$name] = true;
             /** @var ActiveRecord $owner */
             $owner = $this->owner;
             if ($owner->isNewRecord) {
                 $this->_newValues[$name] = $models;
             } else {
-                $storedValues = $owner->getRelation($originalName)->indexBy($this->indexBy)->all();
-                foreach ($models as $key => $model) {
-                    /** @var $model ActiveRecord */
-                    if ((substr($key, 0, strlen($this->newKeyPrefix)) == $this->newKeyPrefix) || ($this->indexBy && !array_key_exists($key, $storedValues))) {
-                        $this->_newValues[$name][] = $model;
-                    } else {
-                        $this->_editedValues[$name][$key] = $storedValues[$key];
-                        $this->_editedValues[$name][$key]->setAttributes($model->getAttributes());
+                if ($this->mappedType == self::MAPPED_TYPE_PK_KEY) {
+                    $storedValues = $owner->getRelation($originalName)->indexBy($this->indexBy)->all();
+                    foreach ($models as $key => $model) {
+                        /** @var $model ActiveRecord */
+                        if ((substr($key, 0, strlen($this->newKeyPrefix)) == $this->newKeyPrefix) || ($this->indexBy && !array_key_exists($key, $storedValues))) {
+                            $this->_newValues[$name][] = $model;
+                        } else {
+                            $this->_editedValues[$name][$key] = $storedValues[$key];
+                            $this->_editedValues[$name][$key]->setAttributes($model->getAttributes());
+                        }
+                    }
+                } else {
+                    $pk = $relatedModelClass::primaryKey();
+                    $storedValues = $owner->getRelation($originalName)->indexBy($pk[0])->all();
+                    foreach ($models as $key => $model) {
+                        /** @var $model ActiveRecord */
+                        $primaryKey = $model->primaryKey;
+                        if (!$primaryKey || ($this->indexBy && !array_key_exists($primaryKey, $storedValues))) {
+                            $this->_newValues[$name][$key] = $model;
+                        } else {
+                            $this->_editedValues[$name][$primaryKey] = $storedValues[$primaryKey];
+                            $this->_editedValues[$name][$primaryKey]->setAttributes($model->getAttributes());
+                        }
                     }
                 }
                 $this->_removedValues[$name] = array_diff_key($storedValues, $this->_editedValues[$name]);
@@ -222,7 +265,7 @@ class RelatedBehavior extends Behavior
         /** @var ActiveRecord $owner */
         $owner = $this->owner;
         foreach ($this->fields as $name => $class) {
-            $originalName = $name . $this->filedSuffix;
+            $originalName = $name . $this->fieldSuffix;
             foreach ($this->_newValues[$originalName] as $model) {
                 $owner->link($name, $model);
             }
@@ -241,10 +284,43 @@ class RelatedBehavior extends Behavior
     public function afterDelete()
     {
         foreach ($this->fields as $name => $class) {
-            $originalName = $name . $this->filedSuffix;
+            $originalName = $name . $this->fieldSuffix;
             foreach ($this->{$originalName} as $model) {
                 $model->delete();
             }
         }
+    }
+
+    /**
+     * @param null $attributeNames
+     * @param bool $clearErrors
+     */
+    public function validateWithRelations()
+    {
+        /** @var ActiveRecord $owner */
+        $owner = $this->owner;
+
+        return $owner->validate() && $this->validateRelations();
+    }
+
+    /**
+     * Run validation for all related records
+     *
+     * @return bool
+     */
+    public function validateRelations()
+    {
+        $validateRelated = true;
+        foreach ($this->_editedValues as $values) {
+            foreach ($values as $item) {
+                $validateRelated &= $item->validate();
+            }
+        }
+        foreach ($this->_newValues as $values) {
+            foreach ($values as $item) {
+                $validateRelated &= $item->validate();
+            }
+        }
+        return $validateRelated;
     }
 }
