@@ -35,11 +35,11 @@ class  MysqlDbImport extends Model
     public function run()
     {
         $file = UploadedFile::getInstance($this, 'file');
-        $path = Yii::getAlias($this->directory . $file->name);
+        $path = \Yii::getAlias($this->directory . $file->name);
         $file->saveAs($path);
 
         /** @var Connection $db */
-        $db = Yii::$app->get($this->component);
+        $db = \Yii::$app->get($this->component);
         $user = $db->username;
         $pass = $db->password;
         $name = Db::getDsnAttribute('dbname', $db->dsn);
