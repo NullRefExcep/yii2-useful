@@ -1,5 +1,7 @@
 <?php
 
+namespace nullref\useful\models;
+
 use nullref\useful\helpers\Db;
 use yii\base\Model;
 use yii\db\Connection;
