@@ -66,6 +66,10 @@ composer require nullref/yii2-useful --prefer-dist
 
     Same as Mappable trait but for ActiveQuery.
     
+- #### SessionModel
+
+    Save and get object from session
+    
 ### Filters
 - #### RedirectFilter
     Redirect after action by url param.
