@@ -47,7 +47,11 @@ composer require nullref/yii2-useful --prefer-dist
 
 - #### TranslationBehavior
 
-    Allow to implement multilingual features.
+    Allows to implement multilingual features.
+
+- #### CacheTagDependencyBehavior
+
+    Allows to invalidate TagDependency when modify ActiveRecord
 
 ### Traits
 - #### GetDefinition
